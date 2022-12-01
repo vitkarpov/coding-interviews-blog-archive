@@ -46,6 +46,7 @@ Apr 5, 2021 · 4 min read
 
 Мы можем либо взять текущую строку, тем самым как-то потратив бюджет. Либо не брать текущую строку, сэкономив бюджет в надежде, что брать следующую строку окажется выгоднее.
 
+```js
     /**
      * Функция обхода возможных вариантов в глубину.
      * Принимает индекс массива откуда начинать поиск,
@@ -64,32 +65,33 @@ Apr 5, 2021 · 4 min read
             dfs(from + 1, _0sLimit, _1sLimit)
         );
     }
-    
+```    
 
 В рекурсивном решении главное не забыть про условия для выхода из рекурсии. В данном случае, их два:
 
 *   потратили весь бюджет;
 *   дошли до конца массива.
 
-    function dfs(from, _0sLimit, _1sLimit) {
-    +   // потратили бюджет — вернём минус бесконечность,
-    +   // чтобы скомпенсировать +1 и этот результат точно
-    +   // отсеялся через Math.max 
-    +   if (_0sLimit < 0 || _1sLimit < 0) {
-    +       return -Infinity;
-    +   }
-    +   // дошли до конца массива, проверять нечего
-    +   if (from === strs.length) {
-    +       return 0;
-    +   }
-        const [_0s, _1s] = strs[from];
-    
-        return Math.max(
-            1 + dfs(from + 1, _0sLimit - _0s, _1sLimit - _1s),
-            dfs(from + 1, _0sLimit, _1sLimit)
-        );
-    }
-    
+```diff
+function dfs(from, _0sLimit, _1sLimit) {
++   // потратили бюджет — вернём минус бесконечность,
++   // чтобы скомпенсировать +1 и этот результат точно
++   // отсеялся через Math.max 
++   if (_0sLimit < 0 || _1sLimit < 0) {
++       return -Infinity;
++   }
++   // дошли до конца массива, проверять нечего
++   if (from === strs.length) {
++       return 0;
++   }
+    const [_0s, _1s] = strs[from];
+
+    return Math.max(
+        1 + dfs(from + 1, _0sLimit - _0s, _1sLimit - _1s),
+        dfs(from + 1, _0sLimit, _1sLimit)
+    );
+}
+```    
 
 Сложность однако по-прежнему `O(2^K)`, где `K` количество строк. Как быть?
 
@@ -99,27 +101,28 @@ Apr 5, 2021 · 4 min read
 
 Итак, как же вкручивать кеш?
 
-    function dfs(from, _0sLimit, _1sLimit) {
-        if (_0sLimit < 0 || _1sLimit < 0) {
-            return -Infinity;
-        }
-        if (from === strs.length) {
-            return 0;
-        }
-    +   const key = `${from},${_0sLimit},${_1sLimit}`;
-    +   if (dp[key]) {
-    +       return dp[key];
-    +   }
-        const [_0s, _1s] = strs[from];
-    
-    +   dp[key] = Math.max(
-    -   return Math.max(
-            1 + dfs(from + 1, _0sLimit - _0s, _1sLimit - _1s),
-            dfs(from + 1, _0sLimit, _1sLimit)
-        );
-    +   return dp[key];
+```diff
+function dfs(from, _0sLimit, _1sLimit) {
+    if (_0sLimit < 0 || _1sLimit < 0) {
+        return -Infinity;
     }
-    
+    if (from === strs.length) {
+        return 0;
+    }
++   const key = `${from},${_0sLimit},${_1sLimit}`;
++   if (dp[key]) {
++       return dp[key];
++   }
+    const [_0s, _1s] = strs[from];
+
++   dp[key] = Math.max(
+-   return Math.max(
+        1 + dfs(from + 1, _0sLimit - _0s, _1sLimit - _1s),
+        dfs(from + 1, _0sLimit, _1sLimit)
+    );
++   return dp[key];
+}
+```
 
 Как это улучшит сложность?
 
@@ -127,6 +130,7 @@ Apr 5, 2021 · 4 min read
 
 Всё вместе.
 
+```js
     /**
      * @param {string[]} strs
      * @param {number} m
@@ -167,7 +171,7 @@ Apr 5, 2021 · 4 min read
         }
         return dfs(0, m, n);
     };
-    
+```
 
 ![](/images/ones-and-zeroes--res1.jpg)
 
