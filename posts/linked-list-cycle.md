@@ -18,21 +18,22 @@ Feb 15, 2021 · 2 min read
 
 Именно это я и постарался сделать. Но сперва суть решения с двумя указателями. Заводим «быстрый» и «медленный» указатели на начало списка. Медленный движется на _каждый следующий_ узел, а быстрый — _через один_. В какой-то момент указатели встречаются если цикл есть, а иначе быстрый указатель дойдёт раньше до конца списка.
 
-    var hasCycle = function(head) {
-      let slow = head;
-      let fast = head;
-    
-      while (fast && fast.next) {
-        slow = slow.next;
-        fast = fast.next.next;
-    
-        if (slow === fast) {
-          return true;
-        }
-      }
-      return false;
-    };
-    
+```js
+var hasCycle = function(head) {
+  let slow = head;
+  let fast = head;
+
+  while (fast && fast.next) {
+    slow = slow.next;
+    fast = fast.next.next;
+
+    if (slow === fast) {
+      return true;
+    }
+  }
+  return false;
+};
+```
 
 Итак, почему это работает?
 

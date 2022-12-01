@@ -40,91 +40,95 @@ Jan 11, 2021 · 3 min read
 
 Единственный важный момент при обходе в ширину — следить за уже посещенными узлами, чтобы не попасть в бесконечный цикл. Обычно это делают либо с помощью дополнительного сета, куда складывают посещённые узлы, либо просто их удаляют из графа по мере обхода.
 
-    /**
-     * @param {string} beginWord
-     * @param {string} endWord
-     * @param {string[]} wordList
-     * @return {number}
-     */
-    var ladderLength = function(beginWord, endWord, wordList) {
-      const words = wordList.concat(beginWord);
-      const graph = buildGraph(words);
-    
-      // в очереди изначально лежит вершина с которой начинаем поиск,
-      // т.е. начальное слово, а также количество пройдённых вершин
-      const q = [[beginWord, 1]];
-    
-      while (q.length > 0) {
-        // снимаем следующий узел с начала очереди,
-        // важно соблюдать правильный порядок (т.е. класть в конец, снимать с начала),
-        // только тогда мы гарантируем нахождения кратчайшего пути — так работает BFS
-        const [node, path] = q.shift();
-    
-        // как только нашли конечное слово,
-        // можно сразу останавливать поиск
-        if (node === endWord) {
-          return path;
-        }
-        // закидываем всех деток в конец очереди
-        for (const child of graph[node]) {
-          q.push([child, path + 1]);
-        }
-        // затираем только что посещённую вершину,
-        // чтобы избежать зацикливания
-        graph[node] = [];
-      }
-      // если обошли все вершины,
-      // но так и не нашли конечного слова,
-      // то его там просто не было
-      return 0;
-    };
-    
-    function buildGraph(words) {
-      const result = {};
-    
-      // чтобы построить граф нужно пробежать по всем словам,
-      // и найти переходы между ними — разница в один символ
-      for (let i = 0; i < words.length; i++) {
-        result[words[i]] = [];
-        for (let j = 0; j < words.length; j++) {
-          if (isOneCharDiff(words[i], words[j])) {
-            result[words[i]].push(words[j]);
-          }
-        }
-      }
-      return result;
+```js
+/**
+ * @param {string} beginWord
+ * @param {string} endWord
+ * @param {string[]} wordList
+ * @return {number}
+ */
+var ladderLength = function(beginWord, endWord, wordList) {
+  const words = wordList.concat(beginWord);
+  const graph = buildGraph(words);
+
+  // в очереди изначально лежит вершина с которой начинаем поиск,
+  // т.е. начальное слово, а также количество пройдённых вершин
+  const q = [[beginWord, 1]];
+
+  while (q.length > 0) {
+    // снимаем следующий узел с начала очереди,
+    // важно соблюдать правильный порядок (т.е. класть в конец, снимать с начала),
+    // только тогда мы гарантируем нахождения кратчайшего пути — так работает BFS
+    const [node, path] = q.shift();
+
+    // как только нашли конечное слово,
+    // можно сразу останавливать поиск
+    if (node === endWord) {
+      return path;
     }
-    
-    function isOneCharDiff(s1, s2) {
-      let changes = 0;
-      for (let i = 0; i < s1.length; i++) {
-        if (s1[i] !== s2[i]) {
-          changes++;
-        }
-      }
-      return changes === 1;
+    // закидываем всех деток в конец очереди
+    for (const child of graph[node]) {
+      q.push([child, path + 1]);
     }
+    // затираем только что посещённую вершину,
+    // чтобы избежать зацикливания
+    graph[node] = [];
+  }
+  // если обошли все вершины,
+  // но так и не нашли конечного слова,
+  // то его там просто не было
+  return 0;
+};
+
+function buildGraph(words) {
+  const result = {};
+
+  // чтобы построить граф нужно пробежать по всем словам,
+  // и найти переходы между ними — разница в один символ
+  for (let i = 0; i < words.length; i++) {
+    result[words[i]] = [];
+    for (let j = 0; j < words.length; j++) {
+      if (isOneCharDiff(words[i], words[j])) {
+        result[words[i]].push(words[j]);
+      }
+    }
+  }
+  return result;
+}
+
+function isOneCharDiff(s1, s2) {
+  let changes = 0;
+  for (let i = 0; i < s1.length; i++) {
+    if (s1[i] !== s2[i]) {
+      changes++;
+    }
+  }
+  return changes === 1;
+}
+```
     
 
 ![](/images/word-ladder--result.jpg)
 
 Слегка можно ускориться, если в `isOneCharDiff` сделать ранний выход из функции — как только количество различных символов больше 1 можно дальше не считать.
 
-    function isOneCharDiff(s1, s2) {
-    - let changes = 0;
-    + let result = false;
-      for (let i = 0; i < s1.length; i++) {
-        if (s1[i] !== s2[i]) {
-    -     changes++;
-    +     if (result) {
-    +       return false;
-    +     }
-    +     result = true;
-        }
-      }
-    - return changes === 1;
-    + return result;
+```diff
+function isOneCharDiff(s1, s2) {
+- let changes = 0;
++ let result = false;
+  for (let i = 0; i < s1.length; i++) {
+    if (s1[i] !== s2[i]) {
+-     changes++;
++     if (result) {
++       return false;
++     }
++     result = true;
     }
+  }
+- return changes === 1;
++ return result;
+}
+```
     
 
 ![](/images/word-ladder--result2.jpg)

@@ -28,40 +28,41 @@ Jan 18, 2021 · 5 min read
 
 Итак, наивное решение.
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number}
-     */
-    var maxResult = function(nums, k) {
-      const n = nums.length;
-      let sum = nums[0];
-      let i = 0;
-    
-      while (i < n - 1) {
-        // ищем максимум среди следующих k чисел
-        const [value, j] = findMaxInRange(nums, i + 1, Math.min(i + k, n - 1));
-        // решаем, что будем прыгать на индекс с максимальным количеством очков,
-        // начиная поиск в следующий раз с этого индекса
-        i = j;
-        sum += value;
-      }
-      return sum;
-    };
-    
-    function findMaxInRange(nums, start, end) {
-      let maxValue = nums[start];
-      let maxIndex = start;
-    
-      for (let i = start + 1; i <= end; i++) {
-        if (nums[i] > maxValue) {
-          maxValue = nums[i];
-          maxIndex = i;
-        }
-      }
-      return [maxValue, maxIndex];
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var maxResult = function(nums, k) {
+  const n = nums.length;
+  let sum = nums[0];
+  let i = 0;
+
+  while (i < n - 1) {
+    // ищем максимум среди следующих k чисел
+    const [value, j] = findMaxInRange(nums, i + 1, Math.min(i + k, n - 1));
+    // решаем, что будем прыгать на индекс с максимальным количеством очков,
+    // начиная поиск в следующий раз с этого индекса
+    i = j;
+    sum += value;
+  }
+  return sum;
+};
+
+function findMaxInRange(nums, start, end) {
+  let maxValue = nums[start];
+  let maxIndex = start;
+
+  for (let i = start + 1; i <= end; i++) {
+    if (nums[i] > maxValue) {
+      maxValue = nums[i];
+      maxIndex = i;
     }
-    
+  }
+  return [maxValue, maxIndex];
+}
+```
 
 ![](/images/jump-game-vi--greedy.jpg)
 
@@ -83,38 +84,40 @@ Jan 18, 2021 · 5 min read
 
 > По форме задача похожа на [размен монет](/posts/coin-change.md)
 
-    dp[i] = nums[i] + findMaxInRange(dp, i + 1, i + k)
-    
+```js
+dp[i] = nums[i] + findMaxInRange(dp, i + 1, i + k)
+```
 
 Похоже на то, что и было, но в отличии от наивного алгоритма — `dp` рассчитывается с конца к началу, и правильно учитывает «хвост».
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number}
-     */
-    var maxResult = function(nums, k) {
-      const n = nums.length;
-      const dp = new Array(n);
-      dp[n - 1] = nums[n - 1];
-    
-      for (let i = n - 2; i >= 0; i--) {
-        // теперь максимум ищем внутри dp, а не nums!
-        const max = findMaxInRange(dp, i + 1, Math.min(i + k, n - 1))
-        dp[i] = nums[i] + max;
-      }
-      return dp[0];
-    };
-    
-    function findMaxInRange(nums, start, end) {
-      let result = nums[start];
-    
-      for (let i = start + 1; i <= end; i++) {
-        result = Math.max(result, nums[i]);
-      }
-      return result;
-    }
-    
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var maxResult = function(nums, k) {
+  const n = nums.length;
+  const dp = new Array(n);
+  dp[n - 1] = nums[n - 1];
+
+  for (let i = n - 2; i >= 0; i--) {
+    // теперь максимум ищем внутри dp, а не nums!
+    const max = findMaxInRange(dp, i + 1, Math.min(i + k, n - 1))
+    dp[i] = nums[i] + max;
+  }
+  return dp[0];
+};
+
+function findMaxInRange(nums, start, end) {
+  let result = nums[start];
+
+  for (let i = start + 1; i <= end; i++) {
+    result = Math.max(result, nums[i]);
+  }
+  return result;
+}
+```
 
 ![](/images/jump-game-vi--tle.jpg)
 
@@ -126,38 +129,40 @@ Jan 18, 2021 · 5 min read
 
 На самом деле, как только возникает слово «скользящее окно», сразу вспоминается задача [поиска максимума в окне](/posts/sliding-window-maximum.md) — ровно ту же идею можно использовать и здесь, чтобы избавиться от бутылочного горлышка.
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number}
-     */
-    var maxResult = function(nums, k) {
-      const n = nums.length;
-      const dp = new Array(n);
-      // в очереди будем хранить индексы,
-      // которые указывают на максимумальный элемент в dp
-      const q = [n - 1];
-      dp[n - 1] = nums[n - 1];
-    
-      for (let i = n - 2; i >= 0; i--) {
-        // убираем лишние элементы, которые больше не в окне,
-        // окно — [i, i + k]
-        while (q.length > 0 && q[0] > i + k) {
-          q.shift();
-        }
-        // в начале очереди всегда лежит индекс,
-        // который указывает на максимальное значение в dp
-        dp[i] = nums[i] + dp[q[0]];
-        // убираем с конца очереди все элементы,
-        // которые уже точно не станут максимумами
-        while (q.length > 0 && dp[q[q.length - 1]] < dp[i]) {
-          q.pop();
-        }
-        // кладём в очередь новое начало окна
-        q.push(i);
-      }
-      return dp[0];
-    };
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var maxResult = function(nums, k) {
+  const n = nums.length;
+  const dp = new Array(n);
+  // в очереди будем хранить индексы,
+  // которые указывают на максимумальный элемент в dp
+  const q = [n - 1];
+  dp[n - 1] = nums[n - 1];
+
+  for (let i = n - 2; i >= 0; i--) {
+    // убираем лишние элементы, которые больше не в окне,
+    // окно — [i, i + k]
+    while (q.length > 0 && q[0] > i + k) {
+      q.shift();
+    }
+    // в начале очереди всегда лежит индекс,
+    // который указывает на максимальное значение в dp
+    dp[i] = nums[i] + dp[q[0]];
+    // убираем с конца очереди все элементы,
+    // которые уже точно не станут максимумами
+    while (q.length > 0 && dp[q[q.length - 1]] < dp[i]) {
+      q.pop();
+    }
+    // кладём в очередь новое начало окна
+    q.push(i);
+  }
+  return dp[0];
+};
+```
     
 
 Мы никогда не используем один и тот же элемент более двух раз (положить и убрать из очереди), соответсвенно сложность сокращается до `O(n)`.
@@ -166,42 +171,44 @@ Jan 18, 2021 · 5 min read
 
 Слегка можно ускориться, если написать «условно честную очередь» — чтобы удаление элементов с начала было за `O(1)` (т.е. без `shift`).
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number}
-     */
-    var maxResult = function(nums, k) {
-      const n = nums.length;
-      const dp = new Array(n);
-      // в очереди будем хранить индексы,
-      // которые указывают на максимумальный элемент в dp
-      const q = [n - 1];
-      dp[n - 1] = nums[n - 1];
-    + let start = 0;
-    
-      for (let i = n - 2; i >= 0; i--) {
-        // убираем лишние элементы, которые больше не в окне,
-        // окно — [i, i + k]
-    -   while (q.length > 0 && q[0] > i + k) {
-    +   while (q.length > start && q[start] > i + k) {
-    -     q.shift();
-    +     start++;
-        }
-        // в начале очереди всегда лежит индекс,
-        // который указывает на максимальное значение в dp
-        dp[i] = nums[i] + dp[q[0]];
-        // убираем с конца очереди все элементы,
-        // которые уже точно не станут максимумами
-    -   while (q.length > 0 && dp[q[q.length - 1]] < dp[i]) {
-    +   while (q.length > start && dp[q[q.length - 1]] < dp[i]) {
-          q.pop();
-        }
-        // кладём в очередь новое начало окна
-        q.push(i);
-      }
-      return dp[0];
-    };
+```diff
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number}
+ */
+var maxResult = function(nums, k) {
+  const n = nums.length;
+  const dp = new Array(n);
+  // в очереди будем хранить индексы,
+  // которые указывают на максимумальный элемент в dp
+  const q = [n - 1];
+  dp[n - 1] = nums[n - 1];
++ let start = 0;
+
+  for (let i = n - 2; i >= 0; i--) {
+    // убираем лишние элементы, которые больше не в окне,
+    // окно — [i, i + k]
+-   while (q.length > 0 && q[0] > i + k) {
++   while (q.length > start && q[start] > i + k) {
+-     q.shift();
++     start++;
+    }
+    // в начале очереди всегда лежит индекс,
+    // который указывает на максимальное значение в dp
+    dp[i] = nums[i] + dp[q[0]];
+    // убираем с конца очереди все элементы,
+    // которые уже точно не станут максимумами
+-   while (q.length > 0 && dp[q[q.length - 1]] < dp[i]) {
++   while (q.length > start && dp[q[q.length - 1]] < dp[i]) {
+      q.pop();
+    }
+    // кладём в очередь новое начало окна
+    q.push(i);
+  }
+  return dp[0];
+};
+```
     
 
 ![](/images/jump-game-vi--result2.jpg)

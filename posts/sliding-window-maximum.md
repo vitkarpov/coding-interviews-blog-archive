@@ -12,21 +12,22 @@ Jan 4, 2021 · 4 min read
 
 Решение «в лоб» — перебирать все числа в окне, находя максимум на каждом шаге снова.
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number[]}
-     */
-    var maxSlidingWindow = function(nums, k) {
-      const result = [];
-    
-      for (let i = k; i <= nums.length; i++) {
-        // «вырезаем» окно и ищем максимум на каждом шаге
-        result.push(Math.max(...nums.slice(i - k, i)));
-      }
-      return result;
-    };
-    
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+var maxSlidingWindow = function(nums, k) {
+  const result = [];
+
+  for (let i = k; i <= nums.length; i++) {
+    // «вырезаем» окно и ищем максимум на каждом шаге
+    result.push(Math.max(...nums.slice(i - k, i)));
+  }
+  return result;
+};
+```
 
 Сложность — `O(n * k)`. Если сдать это решение, то получим TLE.
 
@@ -51,36 +52,38 @@ Jan 4, 2021 · 4 min read
 
 Каждое число мы трогаем не более 2 раз (положить в очередь, удалить из очереди), поэтому итоговая сложность `O(n)`. То есть вообще не важен размер окна!
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number[]}
-     */
-    var maxSlidingWindow = function(nums, k) {
-      const q = [];
-      const result = [];
-    
-      for (let i = 0; i < nums.length; i++) {
-        // удаляем невалидные индекс слева каждый раз,
-        // когда окно двигается вправо
-        if (q.length > 0 && q[0] < i - k + 1) {
-          q.shift();
-        }
-        // удаляем невалидные индекс справа —
-        // все, которые точно уже не станут максимумами,
-        // по мере продвижения окна направо
-        while (q.length > 0 && nums[q[q.length - 1]] < nums[i]) {
-          q.pop();
-        }
-        // добавляем новый индекс в конец очереди
-        q.push(i);
-        // голова всегда показывает максимум
-        if (i >= k - 1) {
-          result.push(nums[q[0]]);
-        }
-      }
-      return result;
-    };
+```js
+/**
+ * @param {number[]} nums
+ * @param {number} k
+ * @return {number[]}
+ */
+var maxSlidingWindow = function(nums, k) {
+  const q = [];
+  const result = [];
+
+  for (let i = 0; i < nums.length; i++) {
+    // удаляем невалидные индекс слева каждый раз,
+    // когда окно двигается вправо
+    if (q.length > 0 && q[0] < i - k + 1) {
+      q.shift();
+    }
+    // удаляем невалидные индекс справа —
+    // все, которые точно уже не станут максимумами,
+    // по мере продвижения окна направо
+    while (q.length > 0 && nums[q[q.length - 1]] < nums[i]) {
+      q.pop();
+    }
+    // добавляем новый индекс в конец очереди
+    q.push(i);
+    // голова всегда показывает максимум
+    if (i >= k - 1) {
+      result.push(nums[q[0]]);
+    }
+  }
+  return result;
+};
+```
     
 
 ![](/images/sliding-window-maximum--result-slow.jpg)
@@ -93,68 +96,72 @@ Jan 4, 2021 · 4 min read
 
 Сперва обновим код самого решения.
 
-    /**
-     * @param {number[]} nums
-     * @param {number} k
-     * @return {number[]}
-     */
-    var maxSlidingWindow = function(nums, k) {
-    - const q = [];
-    + const q = new LinkedList();
-      const result = [];
-    
-      for (let i = 0; i < nums.length; i++) {
-        // удаляем невалидные индекс слева каждый раз
-        // когда окно двигается вправо
-    -   if (q.length > 0 && q[0] < i - k + 1) {
-    +   if (q.length > 0 && q.front() < i - k + 1) {
-          q.shift();
-        }
-        // удаляем невалидные индекс справа,
-        // все которые точно уже не станут максимумами
-        // по мере продвижения окна направо
-    -   while (q.length > 0 && nums[q[q.length - 1]] < nums[i]) {
-    +   while (q.length > 0 && nums[q.back()] < nums[i]) {
-          q.pop();
-        }
-        // добавляем новый индекс в конец очереди
-        q.push(i);
-        // голова всегда показывает максимум
-        if (i >= k - 1) {
-    -     result.push(nums[q[0]]);
-    +     result.push(nums[q.front());
-        }
-      }
-      return result;
-    };
+```diff
+/**
+  * @param {number[]} nums
+  * @param {number} k
+  * @return {number[]}
+  */
+var maxSlidingWindow = function(nums, k) {
+- const q = [];
++ const q = new LinkedList();
+  const result = [];
+
+  for (let i = 0; i < nums.length; i++) {
+    // удаляем невалидные индекс слева каждый раз
+    // когда окно двигается вправо
+-   if (q.length > 0 && q[0] < i - k + 1) {
++   if (q.length > 0 && q.front() < i - k + 1) {
+      q.shift();
+    }
+    // удаляем невалидные индекс справа,
+    // все которые точно уже не станут максимумами
+    // по мере продвижения окна направо
+-   while (q.length > 0 && nums[q[q.length - 1]] < nums[i]) {
++   while (q.length > 0 && nums[q.back()] < nums[i]) {
+      q.pop();
+    }
+    // добавляем новый индекс в конец очереди
+    q.push(i);
+    // голова всегда показывает максимум
+    if (i >= k - 1) {
+-     result.push(nums[q[0]]);
++     result.push(nums[q.front());
+    }
+  }
+  return result;
+};
+```
     
 
 Как видно, интерфейс почти не меняется: вместо обращения по индексами появляются методы для чтения с головы и хвоста, остальное всё так же как у массива — дифф получается аккуратный. Наконец, сама реализация.
 
-    class LinkedList {
-      constructor() {
-        this.q = [];
-        this.head = 0;
-      }
-      push(v) {
-        this.q.push(v);
-      }
-      pop() {
-        return this.q.pop();
-      }
-      shift() {
-        this.q[this.head++];
-      }
-      front() {
-        return this.q[this.head];
-      }
-      back() {
-        return this.q[this.q.length - 1];
-      }
-      get length() {
-        return this.q.length - this.head;
-      }
-    }
+```js
+class LinkedList {
+  constructor() {
+    this.q = [];
+    this.head = 0;
+  }
+  push(v) {
+    this.q.push(v);
+  }
+  pop() {
+    return this.q.pop();
+  }
+  shift() {
+    this.q[this.head++];
+  }
+  front() {
+    return this.q[this.head];
+  }
+  back() {
+    return this.q[this.q.length - 1];
+  }
+  get length() {
+    return this.q.length - this.head;
+  }
+}
+```
     
 
 Вся соль в том, что мы никогда не удаляем элементы с начала, а просто двигаем указатель на голову дальше.

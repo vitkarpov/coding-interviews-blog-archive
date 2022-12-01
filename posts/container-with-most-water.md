@@ -24,22 +24,24 @@ Oct 26, 2020 · 3 min read
 
 Лучше написать брутфорс, чем не написать ничего, поэтому так и поступим. Всегда можно перебрать все возможные варианты за квадрат и найти максимум.
 
-    /**
-     * @param {number[]} height
-     * @return {number}
-     */
-    var maxArea = function(height) {
-      let result = 0;
-    
-      for (let i = 0; i < height.length; i++) {
-        for (let j = i + 1; j < height.length; j++) {
-          result = Math.max(result,
-            Math.min(height[i], height[j]) * (j - i)
-          );
-        }
-      }
-      return result;
-    };
+```js
+/**
+ * @param {number[]} height
+ * @return {number}
+ */
+var maxArea = function(height) {
+  let result = 0;
+
+  for (let i = 0; i < height.length; i++) {
+    for (let j = i + 1; j < height.length; j++) {
+      result = Math.max(result,
+        Math.min(height[i], height[j]) * (j - i)
+      );
+    }
+  }
+  return result;
+};
+```
     
 
 ![](/images/container-with-most-water--n2.jpg)
@@ -72,33 +74,35 @@ Oct 26, 2020 · 3 min read
 
 В этом и есть суть «жадинки»: на каждой развилке ты точно понимаешь какой путь приведёт к оптимальному результату, а какой точно нет, соответственно отметаешь какое-то количество заведомо неудачных вариантов для проверки.
 
-    /**
-     * @param {number[]} height
-     * @return {number}
-     */
-    var maxArea = function(height) {
-      let result = 0;
-    +  let i = 0;
-    +  let j = height.length - 1;
-    
-    -  for (let i = 0; i < height.length; i++) {
-    -    for (let j = i + 1; j < height.length; j++) {
-    +  while (i < j) {
-        result = Math.max(result,
-          Math.min(height[i], height[j]) * (j - i)
-        );
-    +    // всегда двигаем указатель на меньший столбик,
-    +    // т.к. заранее знаем, что, двигая указатель на больший,
-    +    // большей площади там не будет
-    +    if (height[i] < height[j]) {
-    +      i++;
-    +    } else {
-    +      j--;
-    +    }
-    -   }
-      }
-      return result;
-    };
+```diff
+/**
+  * @param {number[]} height
+  * @return {number}
+  */
+var maxArea = function(height) {
+  let result = 0;
++  let i = 0;
++  let j = height.length - 1;
+
+-  for (let i = 0; i < height.length; i++) {
+-    for (let j = i + 1; j < height.length; j++) {
++  while (i < j) {
+    result = Math.max(result,
+      Math.min(height[i], height[j]) * (j - i)
+    );
++    // всегда двигаем указатель на меньший столбик,
++    // т.к. заранее знаем, что, двигая указатель на больший,
++    // большей площади там не будет
++    if (height[i] < height[j]) {
++      i++;
++    } else {
++      j--;
++    }
+-   }
+  }
+  return result;
+};
+```
     
 
 ![](/images/container-with-most-water--n-result.jpg)

@@ -20,13 +20,15 @@ Apr 12, 2021 · 5 min read
 
 Попробуем накидать скелет:
 
-    let result = 1;
-    for (let y = 0; y < h; y++) {
-      for (let x = 0; x < w; x++) {
-        result = Math.max(result, getMaxPathLen(x, y));
-      }
-    }
-    return result;
+```js
+let result = 1;
+for (let y = 0; y < h; y++) {
+  for (let x = 0; x < w; x++) {
+    result = Math.max(result, getMaxPathLen(x, y));
+  }
+}
+return result;
+```
     
 
 Зная как найти максимальную длину разрешённого пути начиная от `(x, y)`, можно проверить все клетки и выбрать максимальное значение.
@@ -35,49 +37,51 @@ Apr 12, 2021 · 5 min read
 
 Проверяем все четыре направления. Если переход есть — идём в рекурсию, увеличивая длину пройдённого пути. А когда рекурсия открутится назад до текущей клетки, нужно выбрать максимальное значение из всех направлений.
 
-    function getMaxPathLen(x, y) {
-      let result = 1;
-      if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
-        result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
-      }
-      if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
-        result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
-      }
-      if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
-        result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
-      }
-      if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
-        result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
-      }
-      return result;
-    }
-    
+```js
+function getMaxPathLen(x, y) {
+  let result = 1;
+  if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
+    result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
+  }
+  if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
+    result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
+  }
+  if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
+    result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
+  }
+  if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
+    result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
+  }
+  return result;
+}
+``` 
 
 В рекурсии важно вовремя остановиться. Есть ли сейчас возможность прогуляться по кругу, попасть на уже пройдённую клетку, и зациклиться? Обычно это решается следующим образом.
 
-    function getMaxPathLen(x, y) {
-    +   const k = key(x, y);
-    +   if (visited.has(k)) {
-    +       return -Infinity;
-    +   }
-    +   visited.add(k);
-        let result = 1;
-        if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
-        }
-        if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
-        }
-        if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
-        }
-        if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
-        }
-    +   visited.delete(k);
-        return result;
+```diff
+function getMaxPathLen(x, y) {
++   const k = key(x, y);
++   if (visited.has(k)) {
++       return -Infinity;
++   }
++   visited.add(k);
+    let result = 1;
+    if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
     }
-    
+    if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
+    }
+    if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
+    }
+    if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
+    }
++   visited.delete(k);
+    return result;
+}
+```
 
 Заводим сет, в котором будем запоминать пройденные клетки _на данном пути_. Когда рекурсия открутится назад до текущей клетки, не забудем «освободить клетку», чтобы она смогла стать частью другого пути.
 
@@ -99,28 +103,29 @@ Apr 12, 2021 · 5 min read
 
 В этом и есть суть дпшечки или мемоизации здесь. Сложность при этом уменьшится до `O(N)`, потому что количество состояний, которое надо кешировать, ограничено количеством клеток в матрице.
 
-    function getMaxPathLen(x, y) {
-    +   const k = key(x, y);
-    +   if (dp.has(k)) {
-    +     return dp.get(k);
-    +   }
-        let result = 1;
-        if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
-        }
-        if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
-        }
-        if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
-        }
-        if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
-        }
-    +   dp.set(k, result);
-        return result;
+```diff
+function getMaxPathLen(x, y) {
++   const k = key(x, y);
++   if (dp.has(k)) {
++     return dp.get(k);
++   }
+    let result = 1;
+    if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x + 1, y));
     }
-    
+    if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x - 1, y));
+    }
+    if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x, y + 1));
+    }
+    if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + getMaxPathLen(x, y - 1));
+    }
++   dp.set(k, result);
+    return result;
+}
+```
 
 Когда полностью проверили все пути с началом в данном клетке — записали. Потом, при проверке другого пути — прочитали. Таким образом, отсекаем тонну лишних пересчётов, которые привели бы к тому же самому ответу.
 
@@ -128,56 +133,58 @@ Apr 12, 2021 · 5 min read
 
 Функция, которая просто вычисляет ключ в хеш-таблицы для ячейки, по которому будем кешировать значения. В данном случае, реализация у нее очень простая:
 
-    function key(x, y) {
-      return y * matrix[0].length + x;
-    }
-    
+```js
+function key(x, y) {
+  return y * matrix[0].length + x;
+}
+```
 
 Ячейки матрицы легко мапятся на индексы массива. С такой «хеш-таблицей» можно было б и просто массив завести 😊
 
 Всё вместе.
 
-    /**
-     * @param {number[][]} matrix
-     * @return {number}
-     */
-    var longestIncreasingPath = function(matrix) {
-      const h = matrix.length;
-      const w = matrix[0].length;
-      const dp = new Map();
-      function key(x, y) {
-        return y * w + x;
-      }
-      function dfs(x, y) {
-        const k = key(x, y);
-        if (dp.has(k)) {
-          return dp.get(k);
-        }
-        let result = 1;
-        if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + dfs(x + 1, y));
-        }
-        if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
-          result = Math.max(result, 1 + dfs(x - 1, y));
-        }
-        if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + dfs(x, y + 1));
-        }
-        if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
-          result = Math.max(result, 1 + dfs(x, y - 1));
-        }
-        dp.set(k, result);
-        return result;
-      }
-      let result = 1;
-      for (let y = 0; y < h; y++) {
-        for (let x = 0; x < w; x++) {
-          result = Math.max(result, dfs(x, y));
-        }
-      }
-      return result;
-    };
-    
+```js
+/**
+ * @param {number[][]} matrix
+ * @return {number}
+ */
+var longestIncreasingPath = function(matrix) {
+  const h = matrix.length;
+  const w = matrix[0].length;
+  const dp = new Map();
+  function key(x, y) {
+    return y * w + x;
+  }
+  function dfs(x, y) {
+    const k = key(x, y);
+    if (dp.has(k)) {
+      return dp.get(k);
+    }
+    let result = 1;
+    if (x + 1 < w && matrix[y][x + 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + dfs(x + 1, y));
+    }
+    if (x - 1 >= 0 && matrix[y][x - 1] > matrix[y][x]) {
+      result = Math.max(result, 1 + dfs(x - 1, y));
+    }
+    if (y + 1 < h && matrix[y + 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + dfs(x, y + 1));
+    }
+    if (y - 1 >= 0 && matrix[y - 1][x] > matrix[y][x]) {
+      result = Math.max(result, 1 + dfs(x, y - 1));
+    }
+    dp.set(k, result);
+    return result;
+  }
+  let result = 1;
+  for (let y = 0; y < h; y++) {
+    for (let x = 0; x < w; x++) {
+      result = Math.max(result, dfs(x, y));
+    }
+  }
+  return result;
+};
+```
 
 PS. Обсудить можно в [телеграм-чате](https://t.me/ctci_chat_ru) любознательных программистов. Welcome! 🤗
 
