@@ -18,40 +18,42 @@ Sep 28, 2020 · 2 min read
 
 Возьмём preorder вариант обхода, соберём все значения в массив, склеим массив в строчку с определённым разделителем (чтобы потом можно было распарсить назад). Вот и вся сериализация.
 
-    /**
-     * Сеарилизует бинарное дерево в строку.
-     *
-     * @param {TreeNode} root
-     * @return {string}
-     */
-    var serialize = function(root) {
-      const result = [];
-      // удобно собрать все значения в result,
-      // который передаётся по ссылке через все рекурсивные вызовы,
-      // а после склеим всё в строку
-      serializeHelper(root, result);
-      return result.join('|');
-    };
-    
-    /**
-     * @param {TreeNode} root
-     * @param {String[]} result
-     * @return {void}
-     */
-    function serializeHelper(root, result) {
-      // базовый случай — самый низ ветки дерева,
-      // дальше идти некуда, добавим определённый символ «end of tree».
-      // Выбрать можно любой символ.
-      if (root === null) {
-        result.push('$');
-        return;
-      }
-      // preorder вариант обхода,
-      // собираем значение, идём сперва в левую, потом в правую ветки — поиск в глубину
-      result.push(root.val);
-      serializeHelper(root.left, result);
-      serializeHelper(root.right, result);
-    }
+```js
+/**
+ * Сеарилизует бинарное дерево в строку.
+ *
+ * @param {TreeNode} root
+ * @return {string}
+ */
+var serialize = function(root) {
+  const result = [];
+  // удобно собрать все значения в result,
+  // который передаётся по ссылке через все рекурсивные вызовы,
+  // а после склеим всё в строку
+  serializeHelper(root, result);
+  return result.join('|');
+};
+
+/**
+ * @param {TreeNode} root
+ * @param {String[]} result
+ * @return {void}
+ */
+function serializeHelper(root, result) {
+  // базовый случай — самый низ ветки дерева,
+  // дальше идти некуда, добавим определённый символ «end of tree».
+  // Выбрать можно любой символ.
+  if (root === null) {
+    result.push('$');
+    return;
+  }
+  // preorder вариант обхода,
+  // собираем значение, идём сперва в левую, потом в правую ветки — поиск в глубину
+  result.push(root.val);
+  serializeHelper(root.left, result);
+  serializeHelper(root.right, result);
+}
+```
     
 
 Рассмотрим обратный процесс — как из строки получить исходное дерево. Идём от обратного:
@@ -59,33 +61,34 @@ Sep 28, 2020 · 2 min read
 *   делим строчку по разделителю, получаем значения
 *   начинаем создавать узлы дерева, рекурсивно обходя массив
 
-    /**
-     * Десериализует строку назад в дерево.
-     *
-     * @param {string} data
-     * @return {TreeNode}
-     */
-    var deserialize = function(data) {
-      // разворачиваем массив — получим стек,
-      // удобно снимать значения по одному с вершины стека
-      return deserializeHelper(data.split('|').reverse());
-    };
-    
-    function deserializeHelper(vals) {
-      // вершина стека (pop одновременно и снимает элемент)
-      const val = vals.pop();
-      // тот самый спецсимвол «конец ветки дерева»
-      if (val === '$') {
-        return null;
-      }
-      // создаём новый узел со значением на вершине стека
-      const node = new TreeNode(val);
-      // дергаем рекурсию в том же порядке, что и при сериализации (preorder)
-      node.left = deserializeHelper(vals);
-      node.right = deserializeHelper(vals);
-      return node;
-    }
-    
+```js
+/**
+ * Десериализует строку назад в дерево.
+ *
+ * @param {string} data
+ * @return {TreeNode}
+ */
+var deserialize = function(data) {
+  // разворачиваем массив — получим стек,
+  // удобно снимать значения по одному с вершины стека
+  return deserializeHelper(data.split('|').reverse());
+};
+
+function deserializeHelper(vals) {
+  // вершина стека (pop одновременно и снимает элемент)
+  const val = vals.pop();
+  // тот самый спецсимвол «конец ветки дерева»
+  if (val === '$') {
+    return null;
+  }
+  // создаём новый узел со значением на вершине стека
+  const node = new TreeNode(val);
+  // дергаем рекурсию в том же порядке, что и при сериализации (preorder)
+  node.left = deserializeHelper(vals);
+  node.right = deserializeHelper(vals);
+  return node;
+}
+```
 
 Сложность решения — линейная относительно количества узлов, как по времени, так и по памяти, т.к. необходимо обойти все узлы дерева.
 

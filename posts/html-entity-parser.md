@@ -28,53 +28,56 @@ Nov 16, 2020 · 3 min read
 
 Начнём с определения токена. Что это? Просто структурка, которая позволяет определить тип сущности. В добавок к перечисленным в условии мнемоникам мы добавим ещё одну — «просто текст», а так же позиции `start` и `end`, чтобы можно было найти сущность в исходной строке.
 
-    class Token {
-      constructor(entity, start, end) {
-        this.entity = entity;
-        this.start = start;
-        this.end = end;
-      }
-    }
-    
+```js
+class Token {
+  constructor(entity, start, end) {
+    this.entity = entity;
+    this.start = start;
+    this.end = end;
+  }
+}
+```
 
 Прежде, чем писать токенайзер, посмотрим на код, который будет собирать результат:
 
-    /**
-     * @param {string} text
-     * @return {string}
-     */
-    var entityParser = function(text) {
-      return tokenize(text)
-        .map(token => {
-          switch (token.entity) {
-            case ENTITIES.TEXT:
-              return text.substring(token.start, token.end);
-            case ENTITIES.QUOTE:
-              return '"';
-            case ENTITIES.APOS:
-              return "'";
-            case ENTITIES.AMP:
-              return "&";
-            case ENTITIES.GT:
-              return ">";
-            case ENTITIES.LT:
-              return "<";
-            case ENTITIES.SLASH:
-              return "/";
-          }
-        })
-        .join("");
-    };
-    
-    const ENTITIES = {
-      QUOTE: 1,
-      APOS: 2,
-      AMP: 3,
-      GT: 4,
-      LT: 5,
-      SLASH: 6,
-      TEXT: 7
-    };
+```js
+/**
+ * @param {string} text
+ * @return {string}
+ */
+var entityParser = function(text) {
+  return tokenize(text)
+    .map(token => {
+      switch (token.entity) {
+        case ENTITIES.TEXT:
+          return text.substring(token.start, token.end);
+        case ENTITIES.QUOTE:
+          return '"';
+        case ENTITIES.APOS:
+          return "'";
+        case ENTITIES.AMP:
+          return "&";
+        case ENTITIES.GT:
+          return ">";
+        case ENTITIES.LT:
+          return "<";
+        case ENTITIES.SLASH:
+          return "/";
+      }
+    })
+    .join("");
+};
+
+const ENTITIES = {
+  QUOTE: 1,
+  APOS: 2,
+  AMP: 3,
+  GT: 4,
+  LT: 5,
+  SLASH: 6,
+  TEXT: 7
+};
+```
     
 
 > Токенайзер разбивает на токены, парсер из токенов собирает абстрактное синтактическое дерево (AST), с которым можно удобно работать с помощью других программ (наприме, бекенда компилятора). В данном случае, наш «парсер» — всё собирает в строку, и никакое дерево не строит.
@@ -85,75 +88,77 @@ Nov 16, 2020 · 3 min read
 
 Теперь напишем токенайзер. Суть в том, что у нас есть два указателя, которые бегут по строке таким образом, чтобы локализовывать токены.
 
-    function tokenize(text) {
-      // поисковый индекс для типов токена
-      // по указанной мнемонике из текста
-      const SUBSTR_TO_ENTITY = {
-        "&quot;": ENTITIES.QUOTE,
-        "&apos;": ENTITIES.APOS,
-        "&amp;": ENTITIES.AMP,
-        "&gt;": ENTITIES.GT,
-        "&lt;": ENTITIES.LT,
-        "&frasl;": ENTITIES.SLASH
-      };
-    
-      const tokens = [];
-      // два указателя, которые будут
-      // показывать начало и конец токена
-      let prev = 0;
-      let curr = 0;
-    
-      while (curr < text.length) {
-        // как только встретили &,
-        // это может быть началом мнемоники
-        if (text[curr] === "&") {
-          // поищем где находится конец,
-          // +1 чтобы добавить сам символ ";" в интервал
-          const end = text.indexOf(";", curr) + 1;
-    
-          // если ; не нашлось,
-          // то это не мнемоника вовсе,
-          // делать ничего не нужно
-          if (end === 0) {
-            continue;
-          }
-          // добавляем текстовый токен,
-          // т.е всё до "&"
-          tokens.push(new Token(ENTITIES.TEXT, prev, curr));
-    
-          // определяем тип сущности
-          const entity = SUBSTR_TO_ENTITY[text.substring(curr, end)];
-    
-          // если такая существует,
-          // то добавим соответствующий токен
-          if (entity) {
-            tokens.push(new Token(entity, curr, end));
-    
-          // иначе это «просто текст»,
-          // например, &foo; – это не мнемоника
-          } else {
-            tokens.push(new Token(ENTITIES.TEXT, curr, end));
-          }
-          // обновляем указатели,
-          // на следующий за ";" символ,
-          // т.е. всё, что до мы обработали
-          curr = prev = end;
-    
-        // иначе просто продвигаем по строке,
-        // пока не найдём & или строка не кончится
-        } else {
-          curr++;
-        }
+```js
+function tokenize(text) {
+  // поисковый индекс для типов токена
+  // по указанной мнемонике из текста
+  const SUBSTR_TO_ENTITY = {
+    "&quot;": ENTITIES.QUOTE,
+    "&apos;": ENTITIES.APOS,
+    "&amp;": ENTITIES.AMP,
+    "&gt;": ENTITIES.GT,
+    "&lt;": ENTITIES.LT,
+    "&frasl;": ENTITIES.SLASH
+  };
+
+  const tokens = [];
+  // два указателя, которые будут
+  // показывать начало и конец токена
+  let prev = 0;
+  let curr = 0;
+
+  while (curr < text.length) {
+    // как только встретили &,
+    // это может быть началом мнемоники
+    if (text[curr] === "&") {
+      // поищем где находится конец,
+      // +1 чтобы добавить сам символ ";" в интервал
+      const end = text.indexOf(";", curr) + 1;
+
+      // если ; не нашлось,
+      // то это не мнемоника вовсе,
+      // делать ничего не нужно
+      if (end === 0) {
+        continue;
       }
-      // Не забываем добавить текстовый хвост,
-      // curr здесь всегда указывает на конец строки
-      // Интересно, что если строка заканчивалась мнемоникой,
-      // то prev так же будет указывать на конец строки,
-      // и в таком случае будет текстовый токен нулевой длины.
-      // Это нормально, потому что будет собрано, в итоге, в пустую строку.
+      // добавляем текстовый токен,
+      // т.е всё до "&"
       tokens.push(new Token(ENTITIES.TEXT, prev, curr));
-      return tokens;
+
+      // определяем тип сущности
+      const entity = SUBSTR_TO_ENTITY[text.substring(curr, end)];
+
+      // если такая существует,
+      // то добавим соответствующий токен
+      if (entity) {
+        tokens.push(new Token(entity, curr, end));
+
+      // иначе это «просто текст»,
+      // например, &foo; – это не мнемоника
+      } else {
+        tokens.push(new Token(ENTITIES.TEXT, curr, end));
+      }
+      // обновляем указатели,
+      // на следующий за ";" символ,
+      // т.е. всё, что до мы обработали
+      curr = prev = end;
+
+    // иначе просто продвигаем по строке,
+    // пока не найдём & или строка не кончится
+    } else {
+      curr++;
     }
+  }
+  // Не забываем добавить текстовый хвост,
+  // curr здесь всегда указывает на конец строки
+  // Интересно, что если строка заканчивалась мнемоникой,
+  // то prev так же будет указывать на конец строки,
+  // и в таком случае будет текстовый токен нулевой длины.
+  // Это нормально, потому что будет собрано, в итоге, в пустую строку.
+  tokens.push(new Token(ENTITIES.TEXT, prev, curr));
+  return tokens;
+}
+```
     
 
 ![](/images/html-entity-parser--result.jpg)

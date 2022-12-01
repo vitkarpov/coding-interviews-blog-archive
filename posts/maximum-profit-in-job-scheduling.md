@@ -40,29 +40,31 @@ Mar 1, 2021 · 4 min read
 
 Что если у нас три, четыре, `n` задач? В этот момент мы вычислили максимальный профит для `n - 1` задач. И можно это использовать!
 
-    /**
-     * Вычисляет максимальный профит
-     * для «хвоста» списка задач,
-     * где n — длина хвоста.
-     */
-    function getMaxProfit(n) {
-      // базовый случай,
-      // нет доступных задач
-      if (n === TASKS_LEN) {
-        return 0;
-      }
-      // есть два возможных варианта:
-      return Math.max(
-        // возьмем текущую задачу в расписание,
-        // и попробуем пристегнуть к ней следующий
-        // доступный по времени слот
-        profitOfTask(n) + getMaxProfit(findNextSlotAvailable(n)),
-        // не будем брать текущую задачу в расписание,
-        // вместо этого начнём строить новое
-        // со следующей задачи
-        getMaxProfit(n + 1)
-      );
-    }
+```js
+/**
+ * Вычисляет максимальный профит
+ * для «хвоста» списка задач,
+ * где n — длина хвоста.
+ */
+function getMaxProfit(n) {
+  // базовый случай,
+  // нет доступных задач
+  if (n === TASKS_LEN) {
+    return 0;
+  }
+  // есть два возможных варианта:
+  return Math.max(
+    // возьмем текущую задачу в расписание,
+    // и попробуем пристегнуть к ней следующий
+    // доступный по времени слот
+    profitOfTask(n) + getMaxProfit(findNextSlotAvailable(n)),
+    // не будем брать текущую задачу в расписание,
+    // вместо этого начнём строить новое
+    // со следующей задачи
+    getMaxProfit(n + 1)
+  );
+}
+```
     
 
 Количество узлов в таком дереве вызовов будет расти довольно быстро, с учётом того, что мы создаём по два новых вызова в каждом следующем — `O(2^n)`.
@@ -73,96 +75,99 @@ Mar 1, 2021 · 4 min read
 
 Таски задаются трёмя разными массивами: `startTime`, `endTime` и `profit`. Это не очень удобно, поэтому сперва соберём все в один массив с удобными структурами.
 
-    function buildNodesList() {
-      const nodes = [];
-      const len = startTime.length;
-    
-      for (let i = 0; i < len; i++) {
-        nodes.push({ s: startTime[i], e: endTime[i], p: profit[i] });
-      }
-      return nodes;
-    }
-    
+```js
+function buildNodesList() {
+  const nodes = [];
+  const len = startTime.length;
+
+  for (let i = 0; i < len; i++) {
+    nodes.push({ s: startTime[i], e: endTime[i], p: profit[i] });
+  }
+  return nodes;
+}
+```
 
 Так же удобно его отсортировать по времени старта задачи, чтобы быстрее было искать «следующий доступный слот».
 
-    function findNextSlotAvailable(start) {
-      // начинаем поиск следующего доступного слота
-      // со start + 1,
-      // ищем пока не найдётся первый таск,
-      // который не пересекается с текущим
-      for (let i = start + 1; i < len; i++) {
-        if (nodes[i].s >= nodes[start].e) {
-          return i;
-        }
-      }
-      return len;
+```js
+function findNextSlotAvailable(start) {
+  // начинаем поиск следующего доступного слота
+  // со start + 1,
+  // ищем пока не найдётся первый таск,
+  // который не пересекается с текущим
+  for (let i = start + 1; i < len; i++) {
+    if (nodes[i].s >= nodes[start].e) {
+      return i;
     }
-    
+  }
+  return len;
+}
+```
 
 Всё вместе.
 
-    /**
-     * @param {number[]} startTime
-     * @param {number[]} endTime
-     * @param {number[]} profit
-     * @return {number}
-     */
-    var jobScheduling = function(startTime, endTime, profit) {
-      const TASKS_LEN = startTime.length;
-    
-      // преобразуем в список узлов для удобства
-      const nodes = buildNodesList();
-    
-      // отсортируем, чтобы удобнее искать
-      // следующий доступный таск
-      nodes.sort((a, b) => a.s - b.s);
-    
-      // для мемоизации
-      const dp = new Array(TASKS_LEN).fill(0);
-    
-      // рекурсивно возвращает максимальный профит
-      // для суффикса начиная с start
-      function getMaxProfit(start) {
-        // базовый случай,
-        // суффикс длины ноль,
-        // то есть нет доступных задач
-        if (start === TASKS_LEN) {
-          return 0;
-        }
-        // попали в кеш
-        if (dp[start]) {
-          return dp[start];
-        }
-        dp[start] = Math.max(
-          nodes[start].p + getMaxProfit(findNextSlotAvailable(start)),
-          getMaxProfit(start + 1)
-        );
-        return dp[start];
+```js
+/**
+ * @param {number[]} startTime
+ * @param {number[]} endTime
+ * @param {number[]} profit
+ * @return {number}
+ */
+var jobScheduling = function(startTime, endTime, profit) {
+  const TASKS_LEN = startTime.length;
+
+  // преобразуем в список узлов для удобства
+  const nodes = buildNodesList();
+
+  // отсортируем, чтобы удобнее искать
+  // следующий доступный таск
+  nodes.sort((a, b) => a.s - b.s);
+
+  // для мемоизации
+  const dp = new Array(TASKS_LEN).fill(0);
+
+  // рекурсивно возвращает максимальный профит
+  // для суффикса начиная с start
+  function getMaxProfit(start) {
+    // базовый случай,
+    // суффикс длины ноль,
+    // то есть нет доступных задач
+    if (start === TASKS_LEN) {
+      return 0;
+    }
+    // попали в кеш
+    if (dp[start]) {
+      return dp[start];
+    }
+    dp[start] = Math.max(
+      nodes[start].p + getMaxProfit(findNextSlotAvailable(start)),
+      getMaxProfit(start + 1)
+    );
+    return dp[start];
+  }
+  // вспомогателные функции,
+  // описанные ранее
+  function buildNodesList() {
+    const nodes = [];
+    for (let i = 0; i < TASKS_LEN; i++) {
+      nodes.push({ s: startTime[i], e: endTime[i], p: profit[i] });
+    }
+    return nodes;
+  }
+  function findNextSlotAvailable(start) {
+    for (let i = start + 1; i < TASKS_LEN; i++) {
+      if (nodes[i].s >= nodes[start].e) {
+        return i;
       }
-      // вспомогателные функции,
-      // описанные ранее
-      function buildNodesList() {
-        const nodes = [];
-        for (let i = 0; i < TASKS_LEN; i++) {
-          nodes.push({ s: startTime[i], e: endTime[i], p: profit[i] });
-        }
-        return nodes;
-      }
-      function findNextSlotAvailable(start) {
-        for (let i = start + 1; i < TASKS_LEN; i++) {
-          if (nodes[i].s >= nodes[start].e) {
-            return i;
-          }
-        }
-        return TASKS_LEN;
-      }
-      // чтобы получить ответ на задачу,
-      // нужно вызвать для суффикса размером
-      // с изначальный массив
-      return getMaxProfit(0);
-    };
-    
+    }
+    return TASKS_LEN;
+  }
+  // чтобы получить ответ на задачу,
+  // нужно вызвать для суффикса размером
+  // с изначальный массив
+  return getMaxProfit(0);
+};
+```
 
 ![](/images/maximum-profit--result.jpg)
 
