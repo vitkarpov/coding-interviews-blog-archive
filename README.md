@@ -1,6 +1,6 @@
-# Coding interview blog archive
+# Coding Interviews in a Nutshell
 
-Coding interview & system design problems (in Russian)
+"Coding Interviews In a Nutshell" is a comprehensive guide to excel in coding interviews, especially in Big Tech companies. This guide is unique because it covers basic algorithms and data structures with a focus on coding interviews. It doesn't require prior computer science or math knowledge, making it accessible to self-taught developers (in Russian)
 
 ## TOC
 
