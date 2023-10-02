@@ -4,6 +4,7 @@
 
 ## TOC
 
+- [132pattern.md](posts/132pattern.md)
 - [cache.md](posts/cache.md)
 - [coin-change.md](posts/coin-change.md)
 - [combination-sum.md](posts/combination-sum.md)
