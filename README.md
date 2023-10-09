@@ -4,7 +4,7 @@
 
 ## TOC
 
-* [Perfect Square.md](posts/perfect-square.md)
+* [Perfect Square](posts/perfect-square.md)
 * [132pattern.md](posts/132pattern.md)
 * [cache.md](posts/cache.md)
 * [coin-change.md](posts/coin-change.md)
