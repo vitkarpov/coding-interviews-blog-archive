@@ -4,6 +4,7 @@
 
 ## TOC
 
+* [Find In A Mountain Array](posts/find-in-a-mountain-array.md)
 * [Perfect Rectangle](posts/perfect-rectangle.md)
 * [132pattern.md](posts/132pattern.md)
 * [cache.md](posts/cache.md)
