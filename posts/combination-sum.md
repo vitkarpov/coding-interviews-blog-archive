@@ -16,6 +16,8 @@ Feb 1, 2021 · 4 min read
 
 В итоге, две комбинации.
 
+**[Задача на LeetCode](https://leetcode.com/problems/combination-sum/)**.
+
 Решение [#](#решение)
 ---------------------
 

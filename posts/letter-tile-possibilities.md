@@ -9,6 +9,8 @@ Jan 25, 2021 · 4 min read
 
 Для строки `AAB` можно получить 8 таких подпоследовательностей: `"A", "B", "AA", "AB", "BA", "AAB", "ABA", "BAA"`.
 
+**[Задача на LeetCode](https://leetcode.com/problems/letter-tile-possibilities/)**.
+
 Решение [#](#решение)
 ---------------------
 

@@ -9,6 +9,8 @@ Aug 24, 2020 · 7 min read
 
 Нужно найти количество островов.
 
+**[Задача на LeetCode](https://leetcode.com/problems/number-of-islands/)**.
+
 Решение [#](#решение)
 ---------------------
 

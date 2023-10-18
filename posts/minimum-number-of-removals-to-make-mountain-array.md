@@ -5,11 +5,13 @@ Nov 30, 2020 · 3 min read
 
 **Mountain Array** называется такой массив, что есть ровно один элемент, который делит массив на две части: строго возрастающую и строго убывающую. Получается как бы «пик» между ними.
 
-Я разбирал [задачу про поиск «пикового элемента»](https://www.notion.so/Peak-Index-in-a-Mountain-Array-de355555babb4d63898aa70e05ed20a6) в таком массиве.
+Я разбирал [задачу про поиск «пикового элемента»](/posts/peak-index-in-a-mountain-array.md) в таком массиве.
 
 ![](/images/minimum-number-of-removals-to-make-mountain-array--example.jpg)
 
 А в этой задаче требуется найти _минимальное_ количество элементов, которое нужно удалить из массива, чтобы оставшийся массив стал Mountain Array.
+
+**[Задача на LeetCode](https://leetcode.com/problems/minimum-number-of-operations-to-make-array-continuous/)**.
 
 Решение [#](#решение)
 ---------------------

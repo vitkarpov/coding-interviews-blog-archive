@@ -18,7 +18,7 @@ Aug 10, 2020 · 3 min read
     Output: -1
     
 
-[Задача на LeetCode](https://leetcode.com/problems/coin-change/).
+**[Задача на LeetCode](https://leetcode.com/problems/coin-change/)**.
 
 Решение [#](#решение)
 ---------------------
