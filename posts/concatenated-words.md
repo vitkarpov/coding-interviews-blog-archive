@@ -7,6 +7,8 @@ Mar 8, 2021 · 6 min read
 
 ![](/images/concatenated-words--ex.jpg)
 
+**[Задача на LeetCode](https://leetcode.com/problems/concatenated-words/)**.
+
 Решение [#](#решение)
 ---------------------
 

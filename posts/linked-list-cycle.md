@@ -9,6 +9,8 @@ Feb 15, 2021 · 2 min read
 
 Начало цикла искать не нужно, только сам факт.
 
+**[Задача на LeetCode](https://leetcode.com/problems/linked-list-cycle/)**.
+
 Решение [#](#решение)
 ---------------------
 
