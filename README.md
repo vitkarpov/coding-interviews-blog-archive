@@ -6,6 +6,7 @@
 
 ### LeetCode
 
+* [Count Vowels Permutations](posts/count-vowels-permutations.md)
 * [Course Schedule II](posts/course-schedule-ii.md)
 * [Find In A Mountain Array](posts/find-in-a-mountain-array.md)
 * [Perfect Rectangle](posts/perfect-rectangle.md)
