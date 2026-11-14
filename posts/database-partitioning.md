@@ -113,7 +113,7 @@ _(primary key — child\_id, а foreign key — par\_id)_
 Материалы [#](#материалы)
 -------------------------
 
-*   [https://www.educative.io/courses/grokking-the-system-design-interview](https://www.educative.io/courses/grokking-the-system-design-interview)
+*   [https://www.designgurus.io/course/grokking-the-system-design-interview](https://www.designgurus.io/course/grokking-the-system-design-interview)
 *   [https://www.informit.com/articles/article.aspx?p=30875&seqNum=8](https://www.informit.com/articles/article.aspx?p=30875&seqNum=8)
 
 PS. Обсудить можно в [телеграм-чате](https://t.me/ctci_chat_ru) любознательных программистов. Welcome! 🤗
