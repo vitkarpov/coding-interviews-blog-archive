@@ -142,7 +142,7 @@ Atomicity [#](#atomicity)
 
 *   [https://www.figma.com/blog/an-alternative-approach-to-rate-limiting/](https://www.figma.com/blog/an-alternative-approach-to-rate-limiting/)
 *   [https://engineering.classdojo.com/blog/2015/02/06/rolling-rate-limiter/](https://engineering.classdojo.com/blog/2015/02/06/rolling-rate-limiter/)
-*   [https://www.educative.io/courses/grokking-the-system-design-interview](https://www.educative.io/courses/grokking-the-system-design-interview)
+*   [https://www.designgurus.io/course/grokking-the-system-design-interview](https://www.designgurus.io/course/grokking-the-system-design-interview)
 
 PS. Обсудить можно в [телеграм-чате](https://t.me/ctci_chat_ru) любознательных программистов. Welcome! 🤗
 
